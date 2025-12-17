@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile - BrainstormHQ</title>
+    <!-- Load Tailwind CSS from CDN for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      /* Define Custom Theme Variables based on the requested color */
+      :root {
+        --bg-color: #440d19; /* Requested Deep Maroon */
+        --card-bg: #2c0811; /* Darker background for containers */
+        --text-color: #f8f8f8;
+        --primary-color: #a36a48; /* Warm academic color */
+        --primary-hover: #d4a36b; /* Lighter highlight */
+        --border-color: #6b4b3e; /* Subtle boundary color */
+        --input-bg: #1f050a;
+      }
+
+      /* Base Styles */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Utility Classes for Theme */
+      .container-bg {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+      }
+      .text-primary {
+        color: var(--primary-color);
+      }
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        transition: all 0.2s ease;
+      }
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        color: var(--card-bg); /* Dark text on light hover */
+      }
+      .stat-value {
+        color: var(--primary-hover);
+      }
+
+      /* Tab Styles */
+      .tab-button {
+        padding: 0.75rem 1.5rem;
+        color: #a0a0a0;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .tab-button:hover {
+        color: var(--text-color);
+      }
+      .tab-active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-active-content {
+        display: block;
+      }
+
+      /* Custom Scrollbar for dark theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--card-bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-hover);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+      <!-- 1. Profile Header & Meta -->
+      <header class="container-bg rounded-xl p-6 md:p-8 shadow-2xl mb-8">
+        <div
+          class="flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-border-color pb-6 mb-6"
+        >
+          <!-- Avatar -->
+          <img
+            src="https://placehold.co/120x120/A36A48/2C0811?text=N.S"
+            alt="User Avatar"
+            class="w-32 h-32 rounded-full object-cover border-4 border-primary-hover shadow-lg"
+          />
+          <!-- Identity -->
+          <div class="text-center md:text-left flex-grow">
+            <!-- Updated Display Name -->
+            <h1
+              class="text-4xl md:text-5xl font-extrabold text-text-color tracking-wide"
+            >
+              Kee
+            </h1>
+            <p class="text-gray-400 mt-2 text-lg">
+              <i class="fas fa-calendar-alt mr-2 text-primary"></i>Member Since:
+              Today
+            </p>
+            <!-- Updated Level -->
+            <p class="text-lg mt-1 text-primary-hover">
+              Level: <span class="font-semibold">Novice</span>
+            </p>
+          </div>
+          <!-- Action Button -->
+          <div class="mt-4 md:mt-0">
+            <button
+              class="btn-primary py-2 px-6 rounded-full font-semibold transition-transform transform hover:scale-105"
+            >
+              <i class="fas fa-cog mr-2"></i>Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Stats Grid (ALL LOW/ZERO VALUES) -->
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div
+            class="bg-input-bg p-4 rounded-lg flex flex-col items-center shadow-md"
+          >
+            <!-- Reputation Score: 1 (Starting value) -->
+            <span class="text-4xl font-extrabold stat-value">1</span>
+            <span class="text-sm text-gray-400 mt-1">Reputation Score</span>
+          </div>
+          <div
+            class="bg-input-bg p-4 rounded-lg flex flex-col items-center shadow-md"
+          >
+            <!-- Questions Asked: 0 -->
+            <span class="text-4xl font-extrabold stat-value">0</span>
+            <span class="text-sm text-gray-400 mt-1">Questions Asked</span>
+          </div>
+          <div
+            class="bg-input-bg p-4 rounded-lg flex flex-col items-center shadow-md"
+          >
+            <!-- Answers Given: 0 -->
+            <span class="text-4xl font-extrabold stat-value">0</span>
+            <span class="text-sm text-gray-400 mt-1">Answers Given</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 3. Content Area: Bio & Activity -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Bio & Top Tags -->
+        <aside class="lg:col-span-1 space-y-8">
+          <!-- About Me / Bio (Updated to Novice) -->
+          <div class="container-bg p-6 rounded-xl shadow-lg sticky top-8">
+            <h3
+              class="text-2xl font-bold mb-3 border-b border-border-color pb-2 text-primary"
+            >
+              About Me
+            </h3>
+            <p class="text-gray-300 leading-relaxed">
+              Just created my account! I'm here to learn about DBMS systems and
+              DAA (Design and Analysis of Algorithms) for a school project. I'm
+              excited to ask my first question and get some input from the
+              community.
+            </p>
+          </div>
+
+          <!-- Top Tags/Skills (Updated to generic/empty) -->
+          <div class="container-bg p-6 rounded-xl shadow-lg">
+            <h3
+              class="text-2xl font-bold mb-3 border-b border-border-color pb-2 text-primary"
+            >
+              Top Tags
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="tag">#DBMS_Help</span>
+              <span class="tag">#DAA_Intro</span>
+              <span class="tag">#Learning</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Column: Activity Feed -->
+        <section class="lg:col-span-2 space-y-6">
+          <h2 class="text-3xl font-bold">Recent Activity</h2>
+
+          <!-- Tabs for Questions/Answers (Updated Counts to 0) -->
+          <div class="flex border-b border-border-color" id="activity-tabs">
+            <button class="tab-button tab-active" data-tab="questions">
+              Questions (0)
+            </button>
+            <button class="tab-button" data-tab="answers">Answers (0)</button>
+          </div>
+
+          <!-- Tab Content Area -->
+          <div class="pt-4 space-y-6">
+            <!-- Questions Tab Content (Placeholder) -->
+            <div
+              id="questions"
+              class="tab-content tab-active-content space-y-4"
+            >
+              <div
+                class="text-center p-8 bg-input-bg rounded-lg text-gray-400 shadow-inner"
+              >
+                <i
+                  class="fas fa-question-circle text-4xl mb-3 text-primary"
+                ></i>
+                <p class="text-lg font-semibold">No Questions Posted Yet</p>
+                <p class="text-sm mt-1">
+                  You haven't asked anything. Start your first question to build
+                  your profile!
+                </p>
+              </div>
+            </div>
+
+            <!-- Answers Tab Content (Placeholder) -->
+            <div id="answers" class="tab-content space-y-4">
+              <div
+                class="text-center p-8 bg-input-bg rounded-lg text-gray-400 shadow-inner"
+              >
+                <i class="fas fa-lightbulb text-4xl mb-3 text-primary"></i>
+                <p class="text-lg font-semibold">No Answers Contributed</p>
+                <p class="text-sm mt-1">
+                  Help out the community by answering a question and earn your
+                  first reputation!
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- JavaScript for Tab Switching Logic -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabsContainer = document.getElementById("activity-tabs");
+        const tabButtons = tabsContainer.querySelectorAll(".tab-button");
+        const contentSections = document.querySelectorAll(".tab-content");
+
+        function switchTab(tabName) {
+          // Remove active class from all buttons and contents
+          tabButtons.forEach((btn) => btn.classList.remove("tab-active"));
+          contentSections.forEach((content) =>
+            content.classList.remove("tab-active-content")
+          );
+
+          // Add active class to the clicked button
+          const activeButton = tabsContainer.querySelector(
+            `[data-tab="${tabName}"]`
+          );
+          if (activeButton) {
+            activeButton.classList.add("tab-active");
+          }
+
+          // Show the corresponding content
+          const activeContent = document.getElementById(tabName);
+          if (activeContent) {
+            activeContent.classList.add("tab-active-content");
+          }
+        }
+
+        // Attach click listeners to buttons
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const tabName = button.getAttribute("data-tab");
+            switchTab(tabName);
+          });
+        });
+
+        // Add global tag styles
+        const style = document.createElement("style");
+        style.textContent = `
+                .tag {
+                    display: inline-flex;
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 9999px;
+                    background-color: var(--input-bg);
+                    color: var(--primary-hover);
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    border: 1px solid var(--border-color);
+                }
+                .tag-sm {
+                    padding: 0.25rem 0.6rem;
+                    font-size: 0.75rem;
+                }
+            `;
+        document.head.appendChild(style);
+      });
+
+      // Simple function to replace window.alert (for Edit Profile button)
+      function customAlert(message) {
+        console.log("ACTION:", message);
+        const editBtn = document.querySelector(".btn-primary");
+        editBtn.classList.add("bg-green-600");
+        setTimeout(() => {
+          editBtn.classList.remove("bg-green-600");
+        }, 500);
+      }
+
+      // Attach event listener to Edit Profile button
+      document.querySelector(".btn-primary").addEventListener("click", () => {
+        customAlert("Edit Profile feature triggered!");
+      });
+    </script>
+  </body>
+</html>

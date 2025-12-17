@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrainstormHQ</title>
+
+    <!-- Load Tailwind and Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      /* Variables for easy customization */
+      :root {
+        --primary-color: #f7a43f; /* Warm Orange/Gold */
+        --text-color: #f0e6d6; /* Off-white, creamy text */
+        --background-dark: #440d19; /* Dark background color (darker purple/maroon) */
+        --navbar-bg-transparent: rgba(
+          30,
+          20,
+          35,
+          0.9
+        ); /* Semi-transparent dark for navbar */
+        --card-bg-color: rgba(
+          30,
+          20,
+          35,
+          0.7
+        ); /* Translucent card background */
+        --hover-bg-color: rgba(
+          247,
+          164,
+          63,
+          0.1
+        ); /* Light orange hover state */
+      }
+
+      /* Base styles */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--background-dark);
+        color: var(--text-color);
+        min-height: 100vh;
+      }
+
+      /* Navbar Styling */
+      .navbar {
+        z-index: 1000;
+        background-color: var(--navbar-bg-transparent);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Primary Button Styling */
+      .primary-btn {
+        background-color: var(--primary-color);
+        color: #2c1a00; /* Dark text for contrast on orange */
+        font-weight: 700;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+      }
+
+      .primary-btn:hover {
+        background-color: #ffb75e;
+        box-shadow: 0 4px 10px rgba(247, 164, 63, 0.4);
+        transform: translateY(-1px);
+      }
+
+      /* Question/Card Styling */
+      .qa-card {
+        background: var(--card-bg-color);
+        border: 1px solid rgba(240, 230, 214, 0.15);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+      }
+
+      .qa-card:hover {
+        background-color: var(--hover-bg-color);
+        border-color: var(--primary-color);
+      }
+
+      /* --- SHARED STYLING FOR BOTH SEARCH BARS --- */
+      .search-container {
+        /* Base look */
+        background-color: var(
+          --card-bg-color
+        ); /* Use dark translucent card color */
+        border: 1px solid rgba(247, 164, 63, 0.4); /* Subtle orange border */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .search-container:focus-within,
+      .search-container:hover {
+        /* Hover/Focus effect */
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(247, 164, 63, 0.2);
+      }
+
+      /* Style the actual input field inside the container to be transparent */
+      .search-container input[type="search"] {
+        background: transparent;
+        color: var(--text-color);
+      }
+      .search-container input[type="search"]::placeholder {
+        color: #a1a1aa; /* A lighter gray for placeholder text */
+      }
+
+      /* Banner Styling - HEIGHT REDUCED HERE */
+      .hero-banner {
+        width: 100%;
+        height: 300px; /* Reduced height for smaller banner */
+        background-position: top center;
+        background-size: cover;
+        /* Placeholder Background: REPLACE THIS URL with your aesthetic image */
+        background-image: url("images/gif.gif");
+        position: relative;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        margin-bottom: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Navigation Bar (Kept fixed positioning) -->
+    <header class="navbar w-full px-4 md:px-12 py-3 fixed top-0">
+      <div
+        class="container mx-auto flex justify-between items-center relative z-20"
+      >
+        <!-- Logo / Brand Name --><a
+          href="#"
+          class="logo text-3xl font-extrabold tracking-wider text-[var(--text-color)] hover:text-[var(--primary-color)] transition-colors"
+        >
+          BrainstormHQ
+        </a>
+
+        <!-- Desktop Menu -->
+        <nav class="hidden md:flex items-center space-x-8">
+          <ul class="flex space-x-6">
+            <li>
+              <a
+                href="#"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Home</a
+              >
+            </li>
+            <li>
+              <!-- Updated to use SPA routing --><a
+                href="#"
+                onclick="navigateTo('ask-page')"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Ask</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Tags</a
+              >
+            </li>
+          </ul>
+          <!-- ACTION: Login button now redirects to signin.html -->
+          <button
+            onclick="redirectToLogin('signin.html')"
+            class="primary-btn py-2 px-6 rounded-full text-base font-semibold"
+          >
+            Login
+          </button>
+        </nav>
+
+        <!-- Mobile Menu Button (Hamburger) --><button
+          id="mobile-menu-button"
+          class="md:hidden p-2 rounded-lg text-white hover:bg-[var(--primary-color)]/20 transition-colors"
+        >
+          <i class="fas fa-bars text-xl" id="menu-icon"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden w-full transition-all duration-300 ease-in-out py-2 relative z-20"
+      >
+        <ul class="flex flex-col space-y-3 pt-3 pb-4">
+          <li>
+            <a
+              href="#"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Home</a
+            >
+          </li>
+          <li>
+            <!-- Updated to use SPA routing --><a
+              href="#"
+              onclick="navigateTo('ask-page')"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Ask</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Tags</a
+            >
+          </li>
+        </ul>
+        <div class="pt-4 border-t border-white/20">
+          <!-- ACTION: Login button now redirects to signin.html -->
+          <button
+            onclick="redirectToLogin(signin.html)"
+            class="primary-btn w-full py-3 px-6 rounded-lg text-base font-semibold"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- PADDING FOR FIXED NAVBAR -->
+    <div class="pt-[64px] md:pt-[72px]"></div>
+
+    <!-- --- HOME PAGE SECTION (Primary View) --- -->
+    <section id="home-page">
+      <!-- 2. Aesthetic Image Banner -->
+      <div class="hero-banner" id="aesthetic-banner">
+        <div
+          class="absolute inset-0 flex flex-col justify-center items-center bg-black/30"
+        >
+          <h1
+            class="text-3xl md:text-4xl font-extrabold text-white mb-1 drop-shadow-xl"
+          >
+            <!--Ask the Digital Séance-->
+          </h1>
+          <p class="text-lg text-[var(--primary-color)] drop-shadow-xl">
+            <!--add anything-->
+          </p>
+        </div>
+      </div>
+
+      <div class="container mx-auto px-4 pb-12">
+        <div class="max-w-4xl mx-auto space-y-4">
+          <form action="#" class="w-full">
+            <div
+              class="flex items-center search-container px-4 py-3 rounded-xl"
+            >
+              <i class="fas fa-search mr-3 text-xl text-gray-400"></i>
+              <input
+                type="search"
+                id="qa-search-input"
+                onkeyup="filterQuestions()"
+                placeholder="Search existing questions..."
+                class="w-full bg-transparent focus:outline-none text-white/90"
+                name="q"
+              />
+            </div>
+          </form>
+
+          <div class="w-full md:w-2/3 lg:w-1/2 mx-auto md:mx-0 group">
+            <button
+              onclick="redirectToLogin()"
+              class="w-full text-left rounded-xl cursor-pointer p-0"
+            >
+              <div
+                class="flex items-center search-container px-4 py-3 rounded-xl"
+              >
+                <i
+                  class="fas fa-question-circle mr-3 text-xl text-[var(--primary-color)]"
+                ></i>
+                <span class="text-white/90 font-medium">
+                  Ask a new question
+                </span>
+              </div>
+            </button>
+            <!-- HOVER TEXT REQUIREMENT -->
+            <p
+              class="text-xs text-center mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            >
+              * Login required to submit questions.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. Main Q&A Content -->
+        <main class="max-w-4xl mx-auto pt-10">
+          <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-white">Latest Questions</h2>
+            <!-- REMOVED: Old "Ask a Question" button -->
+          </div>
+
+          <!-- Question List -->
+          <div id="question-list" class="space-y-6">
+            <!-- Sample Question 1 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="pixel art web design assets scaling blurry retro"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  How can I incorporate pixel art into my web design workflow
+                  effectively?
+                </h3>
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >15</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                I'm trying to move away from high-res images to a more low-fi,
+                retro look. What are the best practices for scaling and using
+                pixel assets without them looking blurry?
+              </p>
+              <div
+                class="flex justify-between items-center text-xs text-[var(--text-color)]/60"
+              >
+                <div class="space-x-2">
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >PixelArt</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >WebDesign</span
+                  >
+                </div>
+                <span>
+                  Asked by
+                  <span class="text-[var(--primary-color)] hover:underline"
+                    >GhostlyDev</span
+                  >
+                  <i class="fas fa-clock ml-1"></i> 2 hours ago
+                </span>
+              </div>
+            </div>
+
+            <!-- Sample Question 2 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="react state frontend usestate hook global complex"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  Best practices for maintaining state in a single-file React
+                  component?
+                </h3>
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >3</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                I'm working on a simple project that needs to be contained in
+                one JSX file. Should I rely on `useState` or is there a better
+                hook for managing complex global-like state?
+              </p>
+              <div
+                class="flex justify-between items-center text-xs text-[var(--text-color)]/60"
+              >
+                <div class="space-x-2">
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >React</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >Frontend</span
+                  >
+                </div>
+                <span>
+                  Asked by
+                  <span class="text-[var(--primary-color)] hover:underline"
+                    >WillowTheCoder</span
+                  >
+                  <i class="fas fa-clock ml-1"></i> 1 day ago
+                </span>
+              </div>
+            </div>
+
+            <!-- Sample Question 3 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="javascript gamedev image loading asynchronous canvas preloader"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  What's the best way to handle asynchronous image loading in
+                  HTML games?
+                </h3>
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >9</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                My canvas game sometimes loads resources too slowly, causing
+                flicker. I need a robust preloader solution for my sprite
+                sheets.
+              </p>
+              <div
+                class="flex justify-between items-center text-xs text-[var(--text-color)]/60"
+              >
+                <div class="space-x-2">
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >GameDev</span
+                  >
+                </div>
+                <span>
+                  Asked by
+                  <span class="text-[var(--primary-color)] hover:underline"
+                    >PixelMaestro</span
+                  >
+                  <i class="fas fa-clock ml-1"></i> 5 hours ago
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Load More/Pagination -->
+          <div class="text-center mt-10">
+            <button
+              class="primary-btn py-3 px-8 rounded-lg text-base font-semibold border-2 border-transparent hover:border-white/50"
+            >
+              Load More Questions
+            </button>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- --- ASK PAGE SECTION (Placeholder for future content) --- -->
+    <section id="ask-page" class="hidden container mx-auto px-4 pb-12 pt-20">
+      <h2 class="text-3xl font-bold text-white">Ask a New Question</h2>
+      <p class="text-gray-400 mt-2">
+        Content for submitting a question will go here.
+      </p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black/50 py-6 border-t border-white/10 mt-12">
+      <div
+        class="container mx-auto px-4 text-center md:flex md:justify-between md:items-center"
+      >
+        <p class="text-sm text-[var(--text-color)]/70 mb-4 md:mb-0">
+          &copy; 2025 BrainstormHQ.
+        </p>
+        <div class="space-x-4">
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            >About</a
+          >
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            >Contact</a
+          >
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            ><i class="fab fa-github"></i
+          ></a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // -------------------------------------------------------------------
+      // *** ALTERABLE LOGIN LINK HERE ***
+      // We are setting this to your desired page: signin.html
+      const externalLoginUrl = "signin.html";
+      // -------------------------------------------------------------------
+
+      /**
+       * Redirects the user to the external login page URL.
+       * This function now performs a direct redirect to signin.html.
+       */
+      function redirectToLogin() {
+        // Direct redirect to the page specified in externalLoginUrl
+        window.location.href = externalLoginUrl;
+      }
+
+      // --- Mobile Menu Toggle Logic ---
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuIcon = document.getElementById("menu-icon");
+
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener("click", () => {
+          mobileMenu.classList.toggle("hidden");
+          if (mobileMenu.classList.contains("hidden")) {
+            menuIcon.classList.remove("fa-times");
+            menuIcon.classList.add("fa-bars");
+          } else {
+            menuIcon.classList.remove("fa-bars");
+            menuIcon.classList.add("fa-times");
+          }
+        });
+      }
+
+      // --- Single Page Application (SPA) Router Simulation (Simplified) ---
+      function navigateTo(pageId) {
+        // List of all internal page sections
+        const pages = ["home-page", "ask-page"];
+
+        // 1. Hide all pages
+        pages.forEach((id) => {
+          const page = document.getElementById(id);
+          if (page) {
+            page.classList.add("hidden");
+          }
+        });
+
+        // 2. Show the requested page
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+          targetPage.classList.remove("hidden");
+        }
+        // Ensure menu is closed after navigation on mobile
+        mobileMenu.classList.add("hidden");
+        menuIcon.classList.remove("fa-times");
+        menuIcon.classList.add("fa-bars");
+        // Scroll to the top of the content
+        window.scrollTo(0, 0);
+      }
+
+      // Function for real-time filtering of questions
+      function filterQuestions() {
+        const searchInput = document.getElementById("qa-search-input");
+        const filterText = searchInput.value.toLowerCase().trim();
+        const qaList = document.getElementById("question-list");
+        const cards = qaList.querySelectorAll(".qa-card");
+
+        cards.forEach((card) => {
+          // Combine the content of the card (title, text, and keywords)
+          const title = card.querySelector("h3").textContent.toLowerCase();
+          const body = card.querySelector("p").textContent.toLowerCase();
+          const keywords = card.getAttribute("data-keywords")
+            ? card.getAttribute("data-keywords").toLowerCase()
+            : "";
+          const combinedText = `${title} ${body} ${keywords}`;
+
+          if (combinedText.includes(filterText)) {
+            card.style.display = "block"; // Show the card
+          } else {
+            card.style.display = "none"; // Hide the card
+          }
+        });
+      }
+
+      // Initial setup to ensure only the home page is visible on load
+      document.addEventListener("DOMContentLoaded", () => {
+        // Default to home page if no hash is present
+        const initialPage = window.location.hash
+          ? window.location.hash.substring(1)
+          : "home-page";
+
+        // Only navigate if the target is an internal page
+        if (initialPage === "home-page" || initialPage === "ask-page") {
+          navigateTo(initialPage);
+        } else {
+          navigateTo("home-page"); // Fallback
+        }
+      });
+    </script>
+  </body>
+</html>

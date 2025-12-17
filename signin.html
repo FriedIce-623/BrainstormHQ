@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login / Sign Up</title>
+
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --background-image: url("images/signin.jpg");
+        --primary-color: #3f51b5;
+        --text-color: #e0e0e0;
+        --modal-bg-color: rgba(
+          255,
+          255,
+          255,
+          0.15
+        ); /* Glassmorphism background */
+        --modal-border-color: rgba(255, 255, 255, 0.3);
+        --input-bg-color: rgba(255, 255, 255, 0.1);
+        --input-border-color: rgba(255, 255, 255, 0.4);
+        --dark-overlay: rgba(0, 0, 0, 0.4);
+      }
+
+      /* Base styles */
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #1a2a4b;
+        color: var(--text-color);
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Background Container and Overlay */
+      .background-container {
+        flex-grow: 1;
+        background-image: var(--background-image);
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+      }
+
+      .background-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--dark-overlay);
+        z-index: 1;
+      }
+
+      /* Navbar Styling */
+      .navbar {
+        z-index: 1000;
+      }
+
+      /* Glassmorphism Modal */
+      .auth-modal {
+        background: var(--modal-bg-color);
+        border: 1px solid var(--modal-border-color);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        color: var(--text-color);
+        z-index: 10;
+      }
+
+      /* Input Group Styling */
+      .input-group {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        background: var(--input-bg-color);
+        border: 1px solid var(--input-border-color);
+        border-radius: 8px;
+        color: #fff;
+        outline: none;
+        transition: border-color 0.3s ease;
+      }
+
+      /* Apply transition to the element we want to show/hide dynamically */
+      .toggle-field {
+        transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+        overflow: hidden;
+        opacity: 1;
+        height: auto;
+        margin-bottom: 20px;
+      }
+
+      .toggle-field.hidden-field {
+        opacity: 0;
+        height: 0;
+        margin-bottom: 0;
+        pointer-events: none; /* Disable interaction when hidden */
+      }
+
+      /* Icon positioning */
+      .input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1em;
+      }
+
+      /* Checkbox styling */
+      .checkbox-label input[type="checkbox"] {
+        margin-right: 8px;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--input-border-color);
+        border-radius: 4px;
+        background-color: var(--input-bg-color);
+        position: relative;
+        cursor: pointer;
+      }
+
+      .checkbox-label input[type="checkbox"]:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .checkbox-label input[type="checkbox"]:checked::before {
+        content: "\2713";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12px;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header
+      class="navbar w-full p-4 md:px-12 bg-[var(--dark-overlay)] flex justify-between items-center rounded-b-lg shadow-lg absolute top-0"
+    >
+      <div class="logo text-2xl font-bold text-white">BrainstormHQ</div>
+      <nav class="hidden md:block">
+        <ul class="flex space-x-6">
+          <li>
+            <a
+              href="index.html"
+              class="text-white hover:text-[var(--primary-color)] transition-colors duration-300"
+              >Home</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-white hover:text-[var(--primary-color)] transition-colors duration-300"
+              >About</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-white hover:text-[var(--primary-color)] transition-colors duration-300"
+              >Help</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <button
+        id="nav-auth-btn"
+        class="bg-[var(--primary-color)] text-white py-2 px-4 rounded-lg text-base font-semibold transition-colors duration-300 hover:bg-[#5c6bc0]"
+      >
+        Sign In
+      </button>
+    </header>
+
+    <!-- Main Content and Background -->
+    <div class="background-container">
+      <!-- Dynamic Auth Modal -->
+      <div id="auth-modal" class="auth-modal">
+        <div class="modal-header flex justify-between items-center mb-6">
+          <h2
+            id="modal-title"
+            class="text-3xl font-bold text-white transition-opacity duration-300"
+          >
+            Login
+          </h2>
+        </div>
+
+        <form id="auth-form">
+          <!-- Username/Full Name Field (Hidden for Login) -->
+          <div id="name-field" class="input-group toggle-field hidden-field">
+            <input
+              type="text"
+              placeholder="Username"
+              id="username"
+              autocomplete="username"
+              name="username"
+            />
+            <i class="fas fa-user"></i>
+          </div>
+
+          <!-- Email Field (Always Visible) -->
+          <div class="input-group">
+            <input
+              type="email"
+              placeholder="Email"
+              id="email"
+              required
+              autocomplete="email"
+              name="email"
+            />
+            <i class="fas fa-envelope"></i>
+          </div>
+
+          <div class="input-group">
+            <input
+              type="password"
+              placeholder="Password"
+              id="password"
+              required
+              autocomplete="current-password"
+              name="password"
+            />
+            <i class="fas fa-lock"></i>
+          </div>
+
+          <!-- Confirm Password Field (Hidden for Login) -->
+          <div
+            id="confirm-password-field"
+            class="input-group toggle-field hidden-field"
+          >
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              id="confirm-password"
+              required
+              autocomplete="confirm-password"
+              name="confirmpassword"
+            />
+            <i class="fas fa-lock"></i>
+          </div>
+
+          <!-- Options Group (Login specific fields) -->
+          <div
+            id="login-options"
+            class="flex justify-between items-center mb-6 text-sm transition-opacity duration-300"
+          >
+            <label class="checkbox-label flex items-center cursor-pointer">
+              <input type="checkbox" /> Remember me
+            </label>
+            <a
+              href="#"
+              class="text-white/80 no-underline transition-colors duration-300 hover:text-[var(--primary-color)]"
+              >Forgot Password?</a
+            >
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            id="submit-btn"
+            class="w-full py-3 text-white rounded-lg text-lg font-bold auth-btn transition-colors duration-300 hover:opacity-90"
+          >
+            Login
+          </button>
+        </form>
+
+        <!-- Toggle Link -->
+        <div class="text-center mt-6 text-sm">
+          <span id="toggle-prompt">Don't have an account?</span>
+          <a
+            href="#"
+            id="toggle-auth-mode"
+            class="text-[var(--primary-color)] no-underline font-semibold transition-colors duration-300 hover:text-[#5c6bc0]"
+          >
+            Register
+          </a>
+        </div>
+
+        <!-- Message Box (Instead of alert()) -->
+        <div
+          id="message-box"
+          class="mt-4 p-3 bg-red-600/30 text-white rounded-lg hidden"
+          role="alert"
+        ></div>
+      </div>
+      <!-- End Dynamic Auth Modal -->
+    </div>
+    <!-- End Background Container -->
+
+    <script>
+      // State management for the form mode
+      let isLoginMode = true;
+
+      // Get elements
+      const modalTitle = document.getElementById("modal-title");
+      const nameField = document.getElementById("name-field");
+      const confirmPasswordField = document.getElementById(
+        "confirm-password-field"
+      );
+      const loginOptions = document.getElementById("login-options");
+      const submitBtn = document.getElementById("submit-btn");
+      const togglePrompt = document.getElementById("toggle-prompt");
+      const toggleLink = document.getElementById("toggle-auth-mode");
+      const messageBox = document.getElementById("message-box");
+
+      /**
+       * Toggles the form between Login and Sign Up mode.
+       */
+      function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+
+        if (isLoginMode) {
+          // --- Switch to LOGIN Mode ---
+          modalTitle.textContent = "Login";
+          submitBtn.textContent = "Login";
+          togglePrompt.textContent = "Don't have an account?";
+          toggleLink.textContent = "Register";
+
+          // Hide Sign Up fields
+          nameField.classList.add("hidden-field");
+          confirmPasswordField.classList.add("hidden-field");
+
+          // Show Login specific options
+          loginOptions.style.height = "auto"; // Re-enable visibility
+          loginOptions.style.opacity = "1";
+        } else {
+          // --- Switch to SIGN UP Mode ---
+          modalTitle.textContent = "Create Account";
+          submitBtn.textContent = "Sign Up";
+          togglePrompt.textContent = "Already have an account?";
+          toggleLink.textContent = "Login";
+
+          // Show Sign Up fields
+          nameField.classList.remove("hidden-field");
+          confirmPasswordField.classList.remove("hidden-field");
+
+          // Hide Login specific options
+          loginOptions.style.height = "0"; // Collapse space
+          loginOptions.style.opacity = "0";
+        }
+
+        // Clear any previous messages
+        messageBox.classList.add("hidden");
+      }
+
+      /**
+       * Displays a message in the custom message box.
+       * @param {string} message - The message to display.
+       * @param {string} type - 'success' or 'error'.
+       */
+      function displayMessage(message, type) {
+        messageBox.textContent = message;
+        messageBox.classList.remove("hidden");
+
+        // Set background color based on type
+        if (type === "error") {
+          messageBox.classList.remove("bg-green-600/30");
+          messageBox.classList.add("bg-red-600/30");
+        } else {
+          messageBox.classList.remove("bg-red-600/30");
+          messageBox.classList.add("bg-green-600/30");
+        }
+
+        // Hide after 5 seconds
+        setTimeout(() => {
+          messageBox.classList.add("hidden");
+        }, 5000);
+      }
+
+      // --- NEW FORM SUBMISSION HANDLER ---
+      document
+        .getElementById("auth-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          // Clear previous messages
+          messageBox.classList.add("hidden");
+
+          // Get form data
+          const formData = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          };
+
+          // Add additional fields for signup
+          if (!isLoginMode) {
+            formData.username = document.getElementById("username").value;
+            formData.confirmpassword =
+              document.getElementById("confirm-password").value;
+          }
+
+          // Basic client-side validation
+          if (!formData.email || !formData.password) {
+            displayMessage("Please fill in all required fields", "error");
+            return;
+          }
+
+          if (!isLoginMode) {
+            if (!formData.username || !formData.confirmpassword) {
+              displayMessage("Please fill in all fields", "error");
+              return;
+            }
+
+            if (formData.password !== formData.confirmpassword) {
+              displayMessage("Passwords do not match", "error");
+              return;
+            }
+
+            if (formData.password.length < 6) {
+              displayMessage(
+                "Password must be at least 6 characters long",
+                "error"
+              );
+              return;
+            }
+          }
+
+          try {
+            const endpoint = isLoginMode
+              ? "/api/auth/login"
+              : "/api/auth/signup";
+
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              displayMessage(data.message, "success");
+
+              // Redirect after successful login/signup
+              setTimeout(() => {
+                window.location.href = data.redirect;
+              }, 1000);
+            } else {
+              displayMessage(data.error, "error");
+            }
+          } catch (error) {
+            console.error("Authentication error:", error);
+            displayMessage("Network error. Please try again.", "error");
+          }
+        });
+
+      // --- Event Listeners ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // Initialize to Login Mode
+        toggleAuthMode(); // Sets up the initial state
+      });
+
+      toggleLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleAuthMode();
+      });
+
+      // You could use the navbar button to force the modal visible, but since it's always visible,
+      // we'll use it to ensure the form is in Login mode.
+      document.getElementById("nav-auth-btn").addEventListener("click", () => {
+        if (!isLoginMode) {
+          toggleAuthMode();
+        }
+      });
+
+      // --- NEW: Check if user is already logged in ---
+      async function checkAuthStatus() {
+        try {
+          const response = await fetch("/api/auth/status");
+          const data = await response.json();
+
+          if (data.authenticated) {
+            // User is already logged in, redirect to homepage
+            window.location.href = "/homepage.html";
+          }
+        } catch (error) {
+          console.error("Error checking auth status:", error);
+        }
+      }
+
+      // Check auth status when page loads
+      checkAuthStatus();
+    </script>
+  </body>
+</html>

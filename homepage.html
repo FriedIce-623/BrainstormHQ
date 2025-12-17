@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrainstormHQ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+
+      :root {
+        --primary-color: #f7a43f
+        --background-dark: #440d19;
+        --navbar-bg-transparent: rgba(
+          30,
+          20,
+          35,
+          0.9
+        ); /* Semi-transparent dark for navbar */
+        --card-bg-color: rgba(
+          30,
+          20,
+          35,
+          0.95
+        ); /* Translucent card background (slightly less transparent) */
+        --hover-bg-color: rgba(
+          247,
+          164,
+          63,
+          0.1
+        ); /
+      }
+
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--background-dark);
+        color: var(--text-color);
+        min-height: 100vh;
+      }
+
+      .navbar {
+        z-index: 1000;
+        background-color: var(--navbar-bg-transparent);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      .primary-btn {
+        background-color: var(--primary-color);
+        color: #2c1a00;
+        font-weight: 700;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+      }
+
+      .primary-btn:hover {
+        background-color: #ffb75e;
+        box-shadow: 0 4px 10px rgba(247, 164, 63, 0.4);
+        transform: translateY(-1px);
+      }
+
+      /* Question/Card Styling */
+      .qa-card {
+        background: var(--card-bg-color);
+        border: 1px solid rgba(240, 230, 214, 0.15);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+      }
+
+      .qa-card:hover {
+        background-color: var(--hover-bg-color);
+        border-color: var(--primary-color);
+      }
+
+      /* Search Bar Styling */
+      .search-container {
+        background-color: var(--card-bg-color);
+        border: 1px solid rgba(247, 164, 63, 0.4);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .search-container:focus-within,
+      .search-container:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(247, 164, 63, 0.2);
+      }
+
+      .search-container input[type="search"] {
+        background: transparent;
+        color: var(--text-color);
+      }
+      .search-container input[type="search"]::placeholder {
+        color: #a1a1aa;
+      }
+
+      /* Banner Styling */
+      .hero-banner {
+        width: 100%;
+        height: 300px;
+        background-position: top center;
+        background-size: cover;
+        /* Placeholder Background: Using a generic image URL */
+        background-image: url("images/gif.gif");
+        position: relative;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        margin-bottom: 2rem;
+      }
+
+      /* Spotify Corner Embed Positioning (Made more visible and added handle) */
+      .spotify-corner-embed {
+        position: fixed; /* Changed to fixed so it stays in place when scrolling */
+        top: 35vh; /* Center it vertically on the left side */
+        left: 0;
+        z-index: 500; /* Ensure it's above other content but below navbar */
+        transition: transform 0.3s ease-in-out;
+        width: 280px; /* Increased width slightly for handle */
+        padding: 0; /* Remove padding from main container */
+        transform: translateX(-88%); /* Hide most of it, leaving the handle */
+      }
+
+      .spotify-corner-embed:hover {
+        transform: translateX(0); /* Slide in on hover */
+      }
+
+      .spotify-content {
+        background: var(--card-bg-color);
+        border-right: none;
+        border-radius: 0 10px 10px 0;
+        padding: 1rem;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+        width: 100%;
+      }
+
+      .spotify-handle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateX(
+          100%
+        ); /* Position handle just outside the main content */
+        height: 100%;
+        width: 40px; /* Width of the handle */
+        background-color: var(--primary-color);
+        border-radius: 0 10px 10px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        writing-mode: vertical-rl; /* Write text vertically */
+        text-orientation: mixed;
+        color: #2c1a00;
+        font-weight: bold;
+        padding-top: 5px;
+        line-height: 1;
+        text-align: center;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+      }
+
+      .spotify-handle i {
+        margin-bottom: 5px;
+        transform: rotate(90deg); /* Keep icon upright */
+      }
+
+      /* Responsive adjustments for Spotify embed */
+      @media (min-width: 1024px) {
+        /* Adjust for larger screens */
+        .spotify-corner-embed {
+          top: 35vh;
+        }
+      }
+
+      /* Hide on very small screens to avoid overcrowding */
+      @media (max-width: 640px) {
+        .spotify-corner-embed {
+          display: none;
+        }
+      }
+      /* Dropdown styles */
+      .group:hover .group-hover\:opacity-100 {
+        opacity: 1;
+      }
+
+      .group:hover .group-hover\:visible {
+        visibility: visible;
+      }
+
+      .group:hover .group-hover\:translate-y-0 {
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Navigation Bar -->
+    <header class="navbar w-full px-4 md:px-12 py-3 fixed top-0">
+      <div
+        class="container mx-auto flex justify-between items-center relative z-20"
+      >
+        <!-- Logo / Brand Name --><a
+          href="#"
+          class="logo text-3xl font-extrabold tracking-wider text-[var(--text-color)] hover:text-[var(--primary-color)] transition-colors"
+        >
+          BrainstormHQ
+        </a>
+
+        <nav class="hidden md:flex items-center space-x-8">
+          <ul class="flex space-x-6">
+            <li>
+              <a
+                href="homepage.html"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="askquestion.html"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Ask</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="text-lg text-[var(--text-color)] hover:text-[var(--primary-color)] font-medium py-2 transition-colors"
+                >Tags</a
+              >
+            </li>
+          </ul>
+
+          <!-- Profile Dropdown - Pure CSS -->
+          <div class="relative group">
+            <!-- Profile Icon Button -->
+            <button
+              class="text-3xl text-[var(--text-color)] hover:text-[var(--primary-color)] transition-colors p-2 rounded-full hover:bg-[var(--primary-color)]/10 focus:outline-none"
+              title="Profile Menu"
+            >
+              <i class="fas fa-user-circle"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2"
+            >
+              <a
+                href="user_profile.html"
+                class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors"
+              >
+                <i class="fas fa-user mr-2"></i>Profile
+              </a>
+              <a
+                href="#"
+                onclick="logout(); return false;"
+                class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Mobile Menu Button (Hamburger) --><button
+          id="mobile-menu-button"
+          class="md:hidden p-2 rounded-lg text-white hover:bg-[var(--primary-color)]/20 transition-colors"
+        >
+          <i class="fas fa-bars text-xl" id="menu-icon"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden w-full transition-all duration-300 ease-in-out py-2 relative z-20"
+      >
+        <ul class="flex flex-col space-y-3 pt-3 pb-4">
+          <li>
+            <a
+              href="#"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Home</a
+            >
+          </li>
+          <li>
+            <!-- Updated to use configurable Ask Page link --><a
+              href="#"
+              onclick="redirectToAskPage()"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Ask</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block px-3 py-2 text-white/90 hover:bg-[var(--primary-color)]/20 rounded-lg text-lg transition-colors"
+              >Tags</a
+            >
+          </li>
+        </ul>
+        <div class="pt-4 border-t border-white/20">
+          <!-- ACTION: Mobile Profile button --><button
+            onclick="redirectToProfile()"
+            class="primary-btn w-full py-3 px-6 rounded-lg text-base font-semibold flex items-center justify-center space-x-2"
+          >
+            <i class="fas fa-user-circle text-xl"></i> <span>View Profile</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- PADDING FOR FIXED NAVBAR -->
+    <div class="pt-[64px] md:pt-[72px]"></div>
+
+    <!-- --- MAIN CONTENT SECTION --- -->
+    <section id="home-page">
+      <!-- 2. Aesthetic Image Banner -->
+      <div class="hero-banner" id="aesthetic-banner">
+        <div
+          class="absolute inset-0 flex flex-col justify-center items-center bg-black/30"
+        >
+          <h1
+            class="text-4xl md:text-6xl font-extrabold text-white mb-2 drop-shadow-xl text-center"
+          ></h1>
+          <p
+            class="text-xl text-[var(--primary-color)] font-medium drop-shadow-xl text-center"
+          ></p>
+        </div>
+      </div>
+
+      <!-- Spotify Corner Embed (Now FIXED position and includes a handle) -->
+      <div class="spotify-corner-embed" style="width: 250px">
+        <div class="spotify-content">
+          <h3 class="text-sm font-semibold flex items-center text-white mb-2">
+            <i class="fab fa-spotify mr-2 text-green-400"></i> Code Flow Radio
+          </h3>
+          <iframe
+            style="border-radius: 10px"
+            src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0"
+            width="100%"
+            height="80"
+            frameborder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <!-- Discovery Handle -->
+        <div class="spotify-handle">
+          <i class="fab fa-spotify text-lg"></i>
+          Music
+        </div>
+      </div>
+
+      <div class="container mx-auto px-4 pb-12">
+        <div class="max-w-4xl mx-auto space-y-4">
+          <!-- 3. REAL SEARCH BAR (For Filtering Existing Q&A) -->
+          <form action="#" class="w-full">
+            <div
+              class="flex items-center search-container px-4 py-3 rounded-xl"
+            >
+              <i class="fas fa-search mr-3 text-xl text-gray-400"></i>
+              <input
+                type="search"
+                id="qa-search-input"
+                onkeyup="filterQuestions()"
+                placeholder="Search existing questions..."
+                class="w-full bg-transparent focus:outline-none text-white/90"
+                name="q"
+              />
+            </div>
+          </form>
+
+          <!-- 4. PSEUDO SEARCH BAR (For Asking / Navigation) -->
+          <div class="w-full md:w-full group">
+            <a
+              href="askquestion.html"
+              class="w-full text-left rounded-xl cursor-pointer p-0 focus:outline-none block no-underline"
+            >
+              <div
+                class="flex items-center search-container px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors"
+              >
+                <i
+                  class="fas fa-question-circle mr-3 text-xl text-[var(--primary-color)]"
+                ></i>
+                <span class="text-white/90 font-medium">
+                  Ask a new question and start a discussion...
+                </span>
+              </div>
+            </a>
+            <!-- HOVER TEXT REQUIREMENT -->
+            <p
+              class="text-xs text-center mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            >
+              * Click here to go to the question submission page.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. Main Q&A Content -->
+        <main class="max-w-4xl mx-auto pt-10">
+          <h2 class="text-3xl font-bold text-white mb-8">
+            Trending Discussions
+          </h2>
+
+          <!-- Question List -->
+          <div id="question-list" class="space-y-6">
+            <!-- Sample Question 1 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="pixel art web design assets scaling blurry retro"
+              data-votes="12"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  How can I incorporate pixel art into my web design workflow
+                  effectively?
+                </h3>
+                <!-- Answer Count -->
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >15</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                I'm trying to move away from high-res images to a more low-fi,
+                retro look. What are the best practices for scaling and using
+                pixel assets without them looking blurry?
+              </p>
+              <div
+                class="flex flex-col md:flex-row md:justify-between md:items-center text-xs text-[var(--text-color)]/60 pt-2 border-t border-white/10"
+              >
+                <!-- Tags and Level -->
+                <div class="flex items-center space-x-2 mb-2 md:mb-0">
+                  <!-- Level Tag --><span
+                    class="bg-blue-600/50 px-2 py-1 rounded-full text-white border border-blue-400/50 text-xs font-semibold"
+                    >Level 3</span
+                  >
+                  <!-- Domain Tags --><span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >PixelArt</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >WebDesign</span
+                  >
+                </div>
+
+                <!-- Author and Voting -->
+                <div
+                  class="flex items-center space-x-3 text-sm text-[var(--text-color)]/80"
+                >
+                  <!-- Voting Controls -->
+                  <div class="flex items-center space-x-1">
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), 1)"
+                      class="text-green-400 hover:text-green-300 transition-colors p-1 rounded-full hover:bg-green-400/10 focus:outline-none"
+                      aria-label="Upvote"
+                    >
+                      <i class="fas fa-arrow-up text-base"></i>
+                    </button>
+                    <span class="vote-count font-bold text-base text-white"
+                      >12</span
+                    >
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), -1)"
+                      class="text-red-400 hover:text-red-300 transition-colors p-1 rounded-full hover:bg-red-400/10 focus:outline-none"
+                      aria-label="Downvote"
+                    >
+                      <i class="fas fa-arrow-down text-base"></i>
+                    </button>
+                  </div>
+                  <span>
+                    <span class="hidden md:inline">Asked by</span>
+                    <span class="text-[var(--primary-color)] hover:underline"
+                      >GhostlyDev</span
+                    >
+                    <i class="fas fa-clock ml-1"></i> 2h ago
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Question 2 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="react state frontend usestate hook global complex"
+              data-votes="25"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  Best practices for maintaining state in a single-file React
+                  component?
+                </h3>
+                <!-- Answer Count -->
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >3</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                I'm working on a simple project that needs to be contained in
+                one JSX file. Should I rely on `useState` or is there a better
+                hook for managing complex global-like state?
+              </p>
+              <div
+                class="flex flex-col md:flex-row md:justify-between md:items-center text-xs text-[var(--text-color)]/60 pt-2 border-t border-white/10"
+              >
+                <!-- Tags and Level -->
+                <div class="flex items-center space-x-2 mb-2 md:mb-0">
+                  <!-- Level Tag --><span
+                    class="bg-pink-600/50 px-2 py-1 rounded-full text-white border border-pink-400/50 text-xs font-semibold"
+                    >Level 5</span
+                  >
+                  <!-- Domain Tags --><span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >React</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >Frontend</span
+                  >
+                </div>
+
+                <!-- Author and Voting -->
+                <div
+                  class="flex items-center space-x-3 text-sm text-[var(--text-color)]/80"
+                >
+                  <!-- Voting Controls -->
+                  <div class="flex items-center space-x-1">
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), 1)"
+                      class="text-green-400 hover:text-green-300 transition-colors p-1 rounded-full hover:bg-green-400/10 focus:outline-none"
+                      aria-label="Upvote"
+                    >
+                      <i class="fas fa-arrow-up text-base"></i>
+                    </button>
+                    <span class="vote-count font-bold text-base text-white"
+                      >25</span
+                    >
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), -1)"
+                      class="text-red-400 hover:text-red-300 transition-colors p-1 rounded-full hover:bg-red-400/10 focus:outline-none"
+                      aria-label="Downvote"
+                    >
+                      <i class="fas fa-arrow-down text-base"></i>
+                    </button>
+                  </div>
+                  <span>
+                    <span class="hidden md:inline">Asked by</span>
+                    <span class="text-[var(--primary-color)] hover:underline"
+                      >WillowTheCoder</span
+                    >
+                    <i class="fas fa-clock ml-1"></i> 1d ago
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Question 3 -->
+            <div
+              class="qa-card p-5 rounded-xl transition-all duration-300 cursor-pointer"
+              data-keywords="javascript gamedev image loading asynchronous canvas preloader"
+              data-votes="9"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-xl font-semibold text-white hover:text-[var(--primary-color)] transition-colors"
+                >
+                  What's the best way to handle asynchronous image loading in
+                  HTML games?
+                </h3>
+                <!-- Answer Count -->
+                <div class="text-right flex-shrink-0">
+                  <span
+                    class="block text-xl font-bold text-[var(--primary-color)]"
+                    >9</span
+                  >
+                  <span class="text-xs text-[var(--text-color)]/70"
+                    >Answers</span
+                  >
+                </div>
+              </div>
+              <p class="text-[var(--text-color)]/80 text-sm mb-3 line-clamp-2">
+                My canvas game sometimes loads resources too slowly, causing
+                flicker. I need a robust preloader solution for my sprite
+                sheets.
+              </p>
+              <div
+                class="flex flex-col md:flex-row md:justify-between md:items-center text-xs text-[var(--text-color)]/60 pt-2 border-t border-white/10"
+              >
+                <!-- Tags and Level -->
+                <div class="flex items-center space-x-2 mb-2 md:mb-0">
+                  <!-- Level Tag --><span
+                    class="bg-yellow-600/50 px-2 py-1 rounded-full text-white border border-yellow-400/50 text-xs font-semibold"
+                    >Level 1</span
+                  >
+                  <!-- Domain Tags --><span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-[var(--primary-color)] border border-[var(--primary-color)]/50"
+                    >JavaScript</span
+                  >
+                  <span
+                    class="bg-gray-700/50 px-2 py-1 rounded-full text-white/80 border border-white/20"
+                    >GameDev</span
+                  >
+                </div>
+
+                <!-- Author and Voting -->
+                <div
+                  class="flex items-center space-x-3 text-sm text-[var(--text-color)]/80"
+                >
+                  <!-- Voting Controls -->
+                  <div class="flex items-center space-x-1">
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), 1)"
+                      class="text-green-400 hover:text-green-300 transition-colors p-1 rounded-full hover:bg-green-400/10 focus:outline-none"
+                      aria-label="Upvote"
+                    >
+                      <i class="fas fa-arrow-up text-base"></i>
+                    </button>
+                    <span class="vote-count font-bold text-base text-white"
+                      >9</span
+                    >
+                    <button
+                      onclick="event.stopPropagation(); updateVote(this.closest('.qa-card'), -1)"
+                      class="text-red-400 hover:text-red-300 transition-colors p-1 rounded-full hover:bg-red-400/10 focus:outline-none"
+                      aria-label="Downvote"
+                    >
+                      <i class="fas fa-arrow-down text-base"></i>
+                    </button>
+                  </div>
+                  <span>
+                    <span class="hidden md:inline">Asked by</span>
+                    <span class="text-[var(--primary-color)] hover:underline"
+                      >PixelMaestro</span
+                    >
+                    <i class="fas fa-clock ml-1"></i> 5h ago
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Load More/Pagination -->
+          <div class="text-center mt-10">
+            <button
+              class="primary-btn py-3 px-8 rounded-lg text-base font-semibold border-2 border-transparent hover:border-white/50"
+            >
+              Load More Questions
+            </button>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black/50 py-6 border-t border-white/10 mt-12">
+      <div
+        class="container mx-auto px-4 text-center md:flex md:justify-between md:items-center"
+      >
+        <p class="text-sm text-[var(--text-color)]/70 mb-4 md:mb-0">
+          &copy; 2025 BrainstormHQ.
+        </p>
+        <div class="space-x-4">
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            >About</a
+          >
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            >Contact</a
+          >
+          <a
+            href="#"
+            class="text-sm text-[var(--text-color)]/70 hover:text-[var(--primary-color)]"
+            ><i class="fab fa-github"></i
+          ></a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      console.log(" JavaScript is loaded on homepage");
+
+      const profileUrl = "user_profile.html";
+      const askQuestionUrl = "askquestion.html";
+
+      function redirectToProfile() {
+        window.location.href = profileUrl;
+      }
+
+      function redirectToAskPage() {
+        console.log("✅ redirectToAskPage function IS being called!");
+        window.location.href = askquestionUrl;
+      }
+      console.log(
+        "redirectToAskPage function loaded:",
+        typeof redirectToAskPage
+      );
+      function filterQuestions() {
+        const input = document
+          .getElementById("qa-search-input")
+          .value.toLowerCase();
+        const questions = document.querySelectorAll("#question-list .qa-card");
+
+        questions.forEach((card) => {
+          const text = card.innerText.toLowerCase();
+          const keywords = card.getAttribute("data-keywords") || "";
+
+          // show if text includes search OR keywords include search
+          if (text.includes(input) || keywords.includes(input)) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // --- Mobile Menu Toggle Logic ---
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuIcon = document.getElementById("menu-icon");
+
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener("click", () => {
+          mobileMenu.classList.toggle("hidden");
+          if (mobileMenu.classList.contains("hidden")) {
+            menuIcon.classList.remove("fa-times");
+            menuIcon.classList.add("fa-bars");
+          } else {
+            menuIcon.classList.remove("fa-bars");
+            menuIcon.classList.add("fa-times");
+          }
+        });
+      }
+
+      // --- Voting ---
+      function updateVote(cardElement, change) {
+        const voteCountSpan = cardElement.querySelector(".vote-count");
+        let currentVotes = parseInt(voteCountSpan.textContent);
+        const maxVotes = parseInt(cardElement.getAttribute("data-votes"));
+
+        if (isNaN(currentVotes)) currentVotes = maxVotes;
+
+        let newVotes = currentVotes + change;
+
+        if (newVotes < 0) {
+          newVotes = 0; // Prevent negative votes
+        }
+
+        voteCountSpan.textContent = newVotes;
+        cardElement.setAttribute("data-votes", newVotes);
+      }
+
+      // Filtering of Questions ---
+      function filterQuestions() {
+        const searchInput = document.getElementById("qa-search-input");
+        const filterText = searchInput.value.toLowerCase().trim();
+        const qaList = document.getElementById("question-list");
+        const cards = qaList.querySelectorAll(".qa-card");
+
+        cards.forEach((card) => {
+          const title = card.querySelector("h3").textContent.toLowerCase();
+          const body = card.querySelector("p").textContent.toLowerCase();
+          const keywords = card.getAttribute("data-keywords")
+            ? card.getAttribute("data-keywords").toLowerCase()
+            : "";
+          const combinedText = `${title} ${body} ${keywords}`;
+
+          if (combinedText.includes(filterText)) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      async function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          try {
+            const response = await fetch("/api/auth/logout", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              window.location.href = data.redirect || "/signin.html";
+            } else {
+              // Fallback - redirect anyway
+              window.location.href = "/signin.html";
+            }
+          } catch (error) {
+            console.error("Logout error:", error);
+            // Fallback - redirect to signin page
+            window.location.href = "/signin.html";
+          }
+        }
+      }
+    </script>
+    <div id="root"></div>
+  </body>
+</html>

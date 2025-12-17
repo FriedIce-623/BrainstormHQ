@@ -1,0 +1,43 @@
+/* Background */
+.homepage-background {
+  background: url("bg-cozy.gif") center/cover no-repeat fixed;
+  height: 100vh;
+}
+
+/* Glass panel for homepage content */
+.home-content-box {
+  width: 75%;
+  margin: 90px auto;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 24px 32px;
+  min-height: 70vh;
+}
+
+/* Search bar sizing */
+.searchbar {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Ask input */
+.ask-box input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+
+/* Placeholder feed styling */
+.feed-placeholder {
+  margin-top: 30px;
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  opacity: 0.85;
+}
